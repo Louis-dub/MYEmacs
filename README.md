@@ -2,6 +2,12 @@
 
 This is a custom Emacs configuration for Linux, designed for general-purpose development.
 
+## Overview
+
+Here is a preview of the project:
+
+![preview](screenshot_emacs.png)
+
 ---
 
 ## 🛠️ Install the Project
