@@ -69,65 +69,32 @@
   (treemacs-load-theme "all-the-icons"))
 
 ;; ============================================================
-;; AUTOCOMPLETION / LSP (EGLOT POUR REACT/TS + HTML)
+;; AUTOCOMPLETION / LSP
 ;; ============================================================
-;; Désactive company-mode et eglot dans node_modules
-(defun my-disable-lsp-in-node-modules ()
-  (when (string-match-p "/node_modules/" (or buffer-file-name ""))
-    (company-mode -1)
-    (when (fboundp 'eglot--managed-mode)
-      (eglot--managed-mode -1))))
-
-(add-hook 'after-change-major-mode-hook 'my-disable-lsp-in-node-modules)
-
-;; Configuration de company-mode (comme avant)
 (use-package company
   :hook (prog-mode . company-mode)
   :custom
-  (company-idle-delay 0.2)  ; Reviens à ta valeur initiale
-  (company-minimum-prefix-length 1)  ; Reviens à ta valeur initiale
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 1)
   (company-backends
-   '((company-capf :separate)  ; Utilise eglot pour la complétion
+   '((company-capf :separate)
      company-dabbrev-code
      company-dabbrev
      company-files
      company-keywords)))
 
-;; Active company-mode pour html-mode
-(add-hook 'html-mode-hook 'company-mode)
-
-;; Configuration Eglot (comme avant, mais avec support HTML)
 (use-package eglot
   :hook ((c-mode c++-mode
           python-mode
-          js-mode typescript-mode
-          tsx-ts-mode typescript-ts-mode js-ts-mode
-          html-mode) . eglot-ensure)  ; Ajoute html-mode ici
+          html-mode) . eglot-ensure)  ;; <--- JS/TS/TSX/JSX RETIRÉS D'ICI
   :config
-  ;; Désactive les fonctionnalités lourdes
   (setq eglot-stay-out-of '(flycheck eldoc eglot-flymake))
   (setq eglot-inlay-hints nil)
-  (setq eglot-server-programs-timeout 15)
 
-  ;; Utilise tsserver pour TypeScript/JSX (comme avant)
   (add-to-list 'eglot-server-programs
-               '((tsx-ts-mode typescript-ts-mode js-ts-mode)
-                 . ("/home/louis/.local/share/pi-node/node-v22.23.2-linux-x64/bin/tsserver" "--stdio")))
-
-  ;; Ajoute vscode-html-language-server pour HTML
-  (add-to-list 'eglot-server-programs
-               '((html-mode) .
-                 ("/home/louis/.local/share/pi-node/node-v22.23.2-linux-x64/lib/node_modules/vscode-html-language-server/bin/html-language-server" "--stdio"))))
-
-;; Associer les extensions de fichiers aux modes
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\'" . html-mode))
-
-;; Force tsx-ts-mode pour les fichiers .jsx
-(add-hook 'jsx-mode-hook (lambda () (tsx-ts-mode)))
-
+               '((html-mode)
+                 . ("/usr/local/bin/vscode-html-language-server" "--stdio")))
+  )
 ;; ============================================================
 ;; TERMINAL INTEGRÉ
 ;; ============================================================
@@ -249,14 +216,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 (setq-default python-indent-offset 4)
-(setq-default js-indent-level 4)
-(setq-default css-indent-offset 4)
-
-(with-eval-after-load 'company
-  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
-  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
-  (define-key company-active-map (kbd "RET") nil)
-  (define-key company-active-map (kbd "<return>") nil))
+;; Indentation JS/TS supprimée, laissera la valeur par défaut d'Emacs
 
 (electric-pair-mode 1)
 
@@ -269,10 +229,7 @@
   :config
   (diff-hl-flydiff-mode 1))
 
-(setq treesit-language-source-alist
-      '((tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")))
+;; Sources Tree-sitter pour TS/JS supprimées
 
 ;; ============================================================
 ;; TERMINAL (VTERM)
@@ -297,12 +254,6 @@
 (global-set-key (kbd "TAB") #'mon-tab-intelligent)
 
 ;; ============================================================
-;; INDENTATION POUR TS/TSX
-;; ============================================================
-(setq typescript-ts-mode-indent-offset 4)
-(setq js-indent-level 4)
-
-;; ============================================================
 ;; MARKDOWN
 ;; ============================================================
 (use-package markdown-mode
@@ -312,7 +263,6 @@
 ;; CUSTOM
 ;; ============================================================
 (custom-set-variables
- '(package-selected-packages
-   '(consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
-(custom-set-faces
- )
+  '(package-selected-packages
+    '(consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
+(custom-set-faces)
