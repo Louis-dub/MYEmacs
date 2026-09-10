@@ -1,12 +1,12 @@
 ;; -*- lexical-binding: t; -*-
-
+(require 'treesit)
 ;; ============================================================
-;; PAQUETS
+;; PACKAGES
 ;; ============================================================
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                          ("elpa" . "https://elpa.gnu.org/packages/")
-                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                         ("elpa" . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -17,7 +17,14 @@
 (setq use-package-always-ensure t)
 
 ;; ============================================================
-;; INTERFACE
+;; PERFORMANCE (keep this early in the file)
+;; ============================================================
+(setq read-process-output-max (* 1024 1024)) ;; 1MB
+(setq eglot-events-buffer-size 0)
+(setq gc-cons-threshold (* 100 1024 1024)) ;; 100MB
+
+;; ============================================================
+;; UI
 ;; ============================================================
 (menu-bar-mode -1)
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -39,7 +46,7 @@
   (set-face-attribute 'default nil :font "Cascadia Mono" :height 110))
 
 ;; ============================================================
-;; THEME + ICONES
+;; THEME + ICONS
 ;; ============================================================
 (use-package all-the-icons
   :if (display-graphic-p))
@@ -56,7 +63,7 @@
   (doom-modeline-icon t))
 
 ;; ============================================================
-;; EXPLORATEUR DE FICHIERS (TREEMACS)
+;; FILE EXPLORER (TREEMACS)
 ;; ============================================================
 (use-package treemacs
   :bind
@@ -69,6 +76,60 @@
   (treemacs-load-theme "all-the-icons"))
 
 ;; ============================================================
+;; TREE-SITTER (modern syntax highlighting + web support)
+;; ============================================================
+(setq treesit-language-source-alist
+      '((python "https://github.com/tree-sitter/tree-sitter-python" "v0.23.6")
+        (c "https://github.com/tree-sitter/tree-sitter-c" "v0.23.3")
+        (cpp "https://github.com/tree-sitter/tree-sitter-cpp" "v0.22.0")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "v0.23.1")
+        (css "https://github.com/tree-sitter/tree-sitter-css" "v0.23.1")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.23.2" "typescript/src")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.23.2" "tsx/src")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml" "v0.7.2")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3")))
+
+(setq major-mode-remap-alist
+      (delq nil
+            (list
+             (when (treesit-ready-p 'python) '(python-mode . python-ts-mode))
+             (when (treesit-ready-p 'c) '(c-mode . c-ts-mode))
+             (when (treesit-ready-p 'cpp) '(c++-mode . c++-ts-mode))
+             (when (treesit-ready-p 'yaml) '(yaml-mode . yaml-ts-mode))
+             (when (treesit-ready-p 'json) '(json-mode . json-ts-mode))
+             (when (treesit-ready-p 'javascript) '(js-mode . js-ts-mode))
+             (when (treesit-ready-p 'css) '(css-mode . css-ts-mode)))))
+
+(when (treesit-ready-p 'typescript)
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode)))
+(when (treesit-ready-p 'tsx)
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode)))
+(when (treesit-ready-p 'css)
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode)))
+(when (and (treesit-ready-p 'html) (fboundp 'html-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode)))
+
+;; ============================================================
+;; DOCKER / YAML
+;; ============================================================
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+(use-package yaml-ts-mode
+  :ensure nil
+  :mode ("\\.ya?ml\\'" . yaml-ts-mode))
+
+;; ============================================================
+;; AUTO-FORMATTING (Prettier on save for web files)
+;; ============================================================
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1))
+
+;; ============================================================
 ;; AUTOCOMPLETION / LSP
 ;; ============================================================
 (use-package company
@@ -76,27 +137,46 @@
   :custom
   (company-idle-delay 0.2)
   (company-minimum-prefix-length 1)
+  (company-selection-wrap-around t)
   (company-backends
    '((company-capf :separate)
      company-dabbrev-code
      company-dabbrev
      company-files
-     company-keywords)))
+     company-keywords))
+  :config
+  (define-key company-active-map (kbd "<up>") #'company-select-previous)
+  (define-key company-active-map (kbd "<down>") #'company-select-next)
+  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+  (define-key company-active-map (kbd "RET") nil))
 
 (use-package eglot
-  :hook ((c-mode c++-mode
-          python-mode
-          html-mode) . eglot-ensure)  ;; <--- JS/TS/TSX/JSX RETIRÉS D'ICI
+  :hook ((c-mode c-ts-mode
+                 c++-mode c++-ts-mode
+                 python-mode python-ts-mode
+                 js-mode js-ts-mode
+                 typescript-ts-mode tsx-ts-mode
+                 css-mode css-ts-mode
+                 mhtml-mode html-ts-mode
+                 dockerfile-mode) . eglot-ensure)
   :config
-  (setq eglot-stay-out-of '(flycheck eldoc eglot-flymake))
+  (setq eglot-stay-out-of '(eldoc))
   (setq eglot-inlay-hints nil)
 
   (add-to-list 'eglot-server-programs
-               '((html-mode)
-                 . ("/usr/local/bin/vscode-html-language-server" "--stdio")))
-  )
+               '((js-mode js-ts-mode typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '((mhtml-mode html-ts-mode) . ("vscode-html-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '((css-mode css-ts-mode) . ("vscode-css-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '(dockerfile-mode . ("docker-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '(yaml-ts-mode . ("yaml-language-server" "--stdio"))))
+
 ;; ============================================================
-;; TERMINAL INTEGRÉ
+;; INTEGRATED TERMINAL
 ;; ============================================================
 (add-to-list 'display-buffer-alist
              '("^\\*vterm\\*"
@@ -106,8 +186,8 @@
 
 (use-package vterm)
 
-(defun mon-toggle-vterm ()
-  "Ouvre ou ferme le terminal vterm en bas de la fenêtre."
+(defun my-toggle-vterm ()
+  "Open or close the vterm terminal at the bottom of the window."
   (interactive)
   (let ((buf (get-buffer "*vterm*")))
     (if (and buf (get-buffer-window buf))
@@ -133,7 +213,7 @@
   (which-key-idle-delay 0.3))
 
 ;; ============================================================
-;; RECHERCHE GLOBALE + DÉPLACER DES LIGNES
+;; GLOBAL SEARCH + MOVE LINES
 ;; ============================================================
 (use-package consult)
 
@@ -142,14 +222,14 @@
   (move-text-default-bindings))
 
 ;; ============================================================
-;; COPIER / COLLER SYSTÈME (CUA)
+;; SYSTEM COPY / PASTE (CUA)
 ;; ============================================================
 (cua-mode 1)
 (setq cua-auto-tabify-rectangles nil)
 (setq cua-keep-region-after-copy t)
 
 ;; ============================================================
-;; RACCOURCIS FAÇON VSCODE
+;; VSCODE-STYLE KEYBINDINGS
 ;; ============================================================
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'isearch-forward)
@@ -158,7 +238,7 @@
 (global-set-key (kbd "C-S-f") 'consult-ripgrep)
 (global-set-key (kbd "C-o") 'find-file)
 (global-set-key (kbd "C-b") 'treemacs)
-(global-set-key (kbd "C-~") 'mon-toggle-vterm)
+(global-set-key (kbd "C-~") 'my-toggle-vterm)
 (global-set-key (kbd "C-S-a") 'move-beginning-of-line)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-S-k") 'kill-line)
@@ -166,28 +246,28 @@
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
 
-(defun mon-ouvrir-dossier ()
-  "Ferme tous les projets treemacs actuels et ouvre un nouveau dossier."
+(defun my-open-folder ()
+  "Close all current treemacs projects and open a new folder."
   (interactive)
   (require 'treemacs)
   (unless (treemacs-get-local-window)
     (treemacs))
-  (let* ((dossier (read-directory-name "Open Folder : "))
-         (nom (file-name-nondirectory (directory-file-name dossier)))
-         (anciens-projets (treemacs-workspace->projects (treemacs-current-workspace))))
-    (treemacs-do-add-project-to-workspace dossier nom)
-    (dolist (projet anciens-projets)
+  (let* ((folder (read-directory-name "Open Folder: "))
+         (name (file-name-nondirectory (directory-file-name folder)))
+         (old-projects (treemacs-workspace->projects (treemacs-current-workspace))))
+    (treemacs-do-add-project-to-workspace folder name)
+    (dolist (project old-projects)
       (ignore-errors
-        (treemacs-do-remove-project-from-workspace projet)))
+        (treemacs-do-remove-project-from-workspace project)))
     (treemacs-select-window)))
 
-(define-key vscode-prefix-map (kbd "C-o") #'mon-ouvrir-dossier)
+(define-key vscode-prefix-map (kbd "C-o") #'my-open-folder)
 
 (with-eval-after-load 'treemacs
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
 
 ;; ============================================================
-;; ONGLETS + SPLIT
+;; TABS + SPLIT
 ;; ============================================================
 (use-package centaur-tabs
   :demand
@@ -202,21 +282,27 @@
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
 
-(defun mon-split-droite ()
-  "Splitte la fenêtre verticalement et déplace le focus dessus."
+(defun my-split-right ()
+  "Split the window vertically and move focus to the new one."
   (interactive)
   (split-window-right)
   (other-window 1))
-(global-set-key (kbd "C-\\") 'mon-split-droite)
+(global-set-key (kbd "C-\\") 'my-split-right)
 
 ;; ============================================================
-;; INDENTATION + AUTRES
+;; INDENTATION + MISC
 ;; ============================================================
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
+(setq-default c-ts-mode-indent-offset 4)
 (setq-default python-indent-offset 4)
-;; Indentation JS/TS supprimée, laissera la valeur par défaut d'Emacs
+(setq-default typescript-ts-mode-indent-offset 4)
+(setq-default js-indent-level 4)
+(setq-default css-ts-mode-indent-offset 4)
+(setq-default css-indent-offset 4)
+(setq-default json-ts-mode-indent-offset 4)
+(setq-default sh-basic-offset 4)
 
 (electric-pair-mode 1)
 
@@ -229,8 +315,6 @@
   :config
   (diff-hl-flydiff-mode 1))
 
-;; Sources Tree-sitter pour TS/JS supprimées
-
 ;; ============================================================
 ;; TERMINAL (VTERM)
 ;; ============================================================
@@ -240,18 +324,22 @@
   (define-key vterm-mode-map (kbd "C-S-v") #'vterm-yank))
 
 ;; ============================================================
-;; TAB INTELLIGENT
+;; SMART TAB
 ;; ============================================================
-(defun mon-tab-intelligent ()
-  "Indente la ligne ; si déjà indentée, insère 4 espaces."
+(defun my-smart-tab ()
+  "Indent the current line, or accept the Company completion if the
+popup is currently visible (so TAB never fights with Company)."
   (interactive)
-  (let ((avant (current-indentation)))
-    (indent-for-tab-command)
-    (when (and (= avant (current-indentation))
-               (<= (current-column) (current-indentation)))
-      (insert "    "))))
+  (if (and (bound-and-true-p company-mode)
+           (company-tooltip-visible-p))
+      (company-complete-selection)
+    (let ((before (current-indentation)))
+      (indent-for-tab-command)
+      (when (and (= before (current-indentation))
+                 (<= (current-column) (current-indentation)))
+        (insert "    ")))))
 
-(global-set-key (kbd "TAB") #'mon-tab-intelligent)
+(global-set-key (kbd "TAB") #'my-smart-tab)
 
 ;; ============================================================
 ;; MARKDOWN
@@ -263,6 +351,6 @@
 ;; CUSTOM
 ;; ============================================================
 (custom-set-variables
-  '(package-selected-packages
-    '(consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
+ '(package-selected-packages
+   '(apheleia dockerfile-mode consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
 (custom-set-faces)
