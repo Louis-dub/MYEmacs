@@ -62,6 +62,8 @@ chmod 755 install.sh
    (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
    ```
 
+---
+
 ### Troubleshooting
 
 #### Emacs GUI does not launch
@@ -85,6 +87,27 @@ chmod 755 install.sh
   ```bash
   emacs --batch --eval "(package-refresh-contents)" --eval "(package-install 'use-package)"
   ```
+
+---
+
+### Supported
+
+#### Languages
+- C / C++
+- Python
+- HTML / CSS
+- JavaScript
+- TypeScript
+
+#### FrameWorks
+- React (JSX/TSX)
+
+#### Configuration formats
+- JSON
+- YAML
+
+#### Containerisation
+- Docker
 
 ---
 
