@@ -12,87 +12,6 @@ Here is a preview of the project:
 
 ## 🛠️ Install the Project
 
-### Install Required Tools
-
-#### 1. Install **Emacs**
-
-Choose the appropriate command for your Linux distribution:
-
-**Ubuntu/Debian:**
-
-```bash
-sudo apt update && sudo apt install -y emacs
-```
-
-**Fedora:**
-
-```bash
-sudo dnf install -y emacs
-```
-
-**Arch Linux:**
-
-```bash
-sudo pacman -S emacs
-```
-
-**For GUI support (recommended):**  
-If you want to use Emacs with a graphical interface, install the GTK version:
-
-**Ubuntu/Debian:**
-
-```bash
-sudo apt install -y emacs-gtk
-```
-
-**Fedora:**
-
-```bash
-sudo dnf install -y emacs-gtk
-```
-
-**Arch Linux:**
-
-```bash
-sudo pacman -S emacs-gtk
-```
-
----
-
-#### 2. Install **Node.js and npm**
-
-`npm` is required to install LSP servers like `tsserver` and `vscode-html-language-server`.
-
-**Ubuntu/Debian:**
-
-```bash
-sudo apt update && sudo apt install -y nodejs npm
-```
-
-**Fedora:**
-
-```bash
-sudo dnf install -y nodejs npm
-```
-
-**Arch Linux:**
-
-```bash
-sudo pacman -S nodejs npm
-```
-
-**For the latest Node.js version (recommended):**  
-Use `nvm` (Node Version Manager) to install the latest version of Node.js:
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-source ~/.bashrc
-nvm install --lts
-nvm use --lts
-```
-
----
-
 ### Clone the Repository
 
 #### With HTTPS (URL)
@@ -137,11 +56,11 @@ chmod 755 install.sh
   ```bash
    emacs
   ```
-2. **Verify LSP servers** (optional):
-  - Open a TypeScript or HTML file and check that `eglot` starts automatically.
-  - Use `M-x eglot-ensure` to manually start the LSP server.
-
----
+2. **Install the Tree-sitter grammars**:
+   Type M-: and enter this command:
+   ```elisp
+   (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+   ```
 
 ### Troubleshooting
 
