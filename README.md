@@ -111,13 +111,91 @@ chmod 755 install.sh
 
 ---
 
-### Customization
+## ShortCuts
+
+### Global Shortcuts
+
+These shortcuts are available across all modes and buffers.
+   **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-s`              | `save-buffer`             | Save the current buffer.                     |
+ | `C-S-s`            | `isearch-forward`         | Incremental search forward.                  |
+ | `C-z`              | `undo`                    | Undo the last action.                         |
+ | `C-f`              | `isearch-forward`         | Incremental search forward.                  |
+ | `C-S-f`            | `consult-ripgrep`         | Global search in files using `ripgrep`.      |
+ | `C-o`              | `find-file`               | Open a file.                                  |
+ | `C-b`              | `treemacs`                | Toggle the Treemacs file explorer.           |
+ | `C-~`              | `my-toggle-vterm`         | Toggle the integrated terminal (`vterm`).     |
+ | `C-S-a`            | `move-beginning-of-line` | Move cursor to the beginning of the line.     |
+ | `C-a`              | `mark-whole-buffer`      | Select the entire buffer.                     |
+ | `C-S-k`            | `kill-line`               | Delete the current line.                      |
+ | `C-\`              | `my-split-right`          | Split the window vertically.                  |
+ | `C-<prior>`        | `centaur-tabs-backward`   | Switch to the previous tab.                   |
+ | `C-<next>`         | `centaur-tabs-forward`    | Switch to the next tab.                       |
+ | `TAB`              | `my-smart-tab`            | Indent or complete with Company.              |
+
+---
+### CUA Mode Shortcuts (Copy, Cut, Paste)
+These shortcuts are enabled by `cua-mode` for a familiar editing experience.
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-c`              | `kill-ring-save`          | Copy the selected text to the clipboard.      |
+ | `C-x`              | `kill-region`             | Cut the selected text.                        |
+ | `C-v`              | `yank`                    | Paste the copied/cut text.                    |
+
+---
+### Treemacs (File Explorer)
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-c t`            | `treemacs`                | Toggle Treemacs file explorer.               |
+ | `C-k C-o`          | `my-open-folder`          | Open a folder in Treemacs.                   |
+
+---
+
+### Terminal (Vterm)
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-S-v`            | `vterm-yank`              | Paste into the terminal.                     |
+ | `C-S-c`            | `vterm-copy-mode`         | Enter copy mode in the terminal.              |
+
+---
+
+### LSP (Eglot) and Autocompletion (Company)
+ | **Shortcut**       | **Command**                     | **Context**                     |
+ |--------------------|---------------------------------|----------------------------------|
+ | `TAB`              | `company-complete-selection`   | Complete the selection in Company.|
+ | `<up>`             | `company-select-previous`      | Select the previous item in Company. |
+ | `<down>`           | `company-select-next`          | Select the next item in Company.     |
+ | `RET`              | Disabled in Company.            | Prevents automatic validation.   |
+
+---
+
+### Text Editing
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-c C-n`          | `next-buffer`             | Switch to the next buffer.                   |
+ | `C-c C-p`          | `previous-buffer`         | Switch to the previous buffer.               |
+
+---
+### Git (Magit)
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-c g`            | `magit-status`            | Open the Magit interface.                    |
+
+---
+---
+### Notes
+- **`C-k`** is a prefix for custom commands (e.g., `C-k C-o` to open a folder).
+- **VSCode-like shortcuts** (`C-s`, `C-z`, etc.) are inspired by VSCode for a smoother transition.
+- **Company** and **Eglot** shortcuts are optimized for autocompletion and code analysis.
+- **CUA mode** enables `C-c`, `C-x`, and `C-v` for copy, cut, and paste, respectively.
+
+## Customization
 
 - **Change the theme**: Edit `init.el` and modify the `(load-theme 'doom-one t)` line.
 - **Add new packages**: Use `use-package` in `init.el` and run `M-x package-install <package-name>`.
 
 ---
 
-### License
-
-MIT
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
