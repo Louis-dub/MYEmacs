@@ -177,7 +177,7 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
  | **Shortcut**       | **Command**               | **Description**                              |
  |--------------------|---------------------------|----------------------------------------------|
  | `C-c C-a`          | `gptel`                   | Open the codeLlama interaction buffer.       |
- | `C-c C-l C-r`      | `gptel-send`              | Send selected region to codeLlama. 
+ | `C-c RET`      | `gptel-send`              | Send selected region to codeLlama. 
 
 ---
 
