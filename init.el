@@ -242,6 +242,8 @@
 (global-set-key (kbd "C-S-a") 'move-beginning-of-line)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-S-k") 'kill-line)
+(global-set-key (kbd "C-c a") 'gptel)
+(global-set-key (kbd "C-c RET") 'gptel-send)
 
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
@@ -348,9 +350,30 @@ popup is currently visible (so TAB never fights with Company)."
   :mode ("\\.md\\'" . gfm-mode))
 
 ;; ============================================================
+;; GPTEL (LLM via Ollama / CodeLlama)
+;; ============================================================
+(use-package gptel
+  :config
+  (setq gptel-model 'codellama
+        gptel-backend
+        (gptel-make-ollama "Ollama-Mac"
+          :host "100.74.76.60:11434"
+          :stream t
+          :models '(codellama))))
+
+;; ============================================================
 ;; CUSTOM
 ;; ============================================================
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(apheleia dockerfile-mode consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
-(custom-set-faces)
+   '(gptel apheleia dockerfile-mode consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
