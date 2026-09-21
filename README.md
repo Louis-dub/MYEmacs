@@ -109,6 +109,9 @@ chmod 755 install.sh
 #### Containerisation
 - Docker
 
+#### Artificial Intelligence
+- codeLlama with Ollama (You must install the model yourself)
+
 ---
 
 ## ShortCuts
@@ -166,7 +169,15 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
  | `TAB`              | `company-complete-selection`   | Complete the selection in Company.|
  | `<up>`             | `company-select-previous`      | Select the previous item in Company. |
  | `<down>`           | `company-select-next`          | Select the next item in Company.     |
- | `RET`              | Disabled in Company.            | Prevents automatic validation.   |
+ | `RET`              | Disabled in Company.           | Prevents automatic validation.   |
+
+---
+
+### Artificial Intelligence (codeLlama with Ollama)
+ | **Shortcut**       | **Command**               | **Description**                              |
+ |--------------------|---------------------------|----------------------------------------------|
+ | `C-c C-a`          | `gptel`                   | Open the codeLlama interaction buffer.       |
+ | `C-c C-l C-r`      | `gptel-send`              | Send selected region to codeLlama. 
 
 ---
 
