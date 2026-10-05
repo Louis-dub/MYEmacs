@@ -179,7 +179,7 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
  |--------------|--------------|----------------------------------------|
  | `C-c C-a`    | `gptel`      | Open the codeLlama interaction buffer. |
  | `C-c RET`    | `gptel-send` | Send selected region to codeLlama.     |
- | `C-c m       | 'gptel-menu` | Open the menu to change the ia model.  |
+ | `C-c m`      | `gptel-menu` | Open the menu to change the ia model.  |
 
 ---
 
