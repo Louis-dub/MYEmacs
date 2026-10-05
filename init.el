@@ -244,6 +244,7 @@
 (global-set-key (kbd "C-S-k") 'kill-line)
 (global-set-key (kbd "C-c a") 'gptel)
 (global-set-key (kbd "C-c RET") 'gptel-send)
+(global-set-key (kbd "C-c m") 'gptel-menu)
 
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
@@ -354,12 +355,12 @@ popup is currently visible (so TAB never fights with Company)."
 ;; ============================================================
 (use-package gptel
   :config
-  (setq gptel-model 'codellama
-        gptel-backend
-        (gptel-make-ollama "Ollama-Mac"
+  (setq gptel-backend
+        (gptel-make-ollama "Ollama"
           :host "IP_SERVER:11434"
           :stream t
-          :models '(codellama))))
+          :models '(devstral codellama))
+        gptel-model 'devstral))
 
 ;; ============================================================
 ;; CUSTOM
