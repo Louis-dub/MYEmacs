@@ -110,7 +110,7 @@ chmod 755 install.sh
 - Docker
 
 #### Artificial Intelligence
-- codeLlama with Ollama (You must install the model yourself and enter your personnal ip server in the .el file)
+- OLlama (you must install your own model on OLlama)
 
 ---
 
@@ -173,11 +173,12 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
 
 ---
 
-### Artificial Intelligence (codeLlama with Ollama)
- | **Shortcut**       | **Command**               | **Description**                              |
- |--------------------|---------------------------|----------------------------------------------|
- | `C-c C-a`          | `gptel`                   | Open the codeLlama interaction buffer.       |
- | `C-c RET`      | `gptel-send`              | Send selected region to codeLlama. 
+### Artificial Intelligence
+ | **Shortcut** | **Command**  | **Description**                        |
+ |--------------|--------------|----------------------------------------|
+ | `C-c C-a`    | `gptel`      | Open the codeLlama interaction buffer. |
+ | `C-c RET`    | `gptel-send` | Send selected region to codeLlama.     |
+ | `C-c m       | 'gptel-menu` | Open the menu to change the ia model.  |
 
 ---
 
