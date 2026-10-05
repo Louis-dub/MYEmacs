@@ -109,8 +109,9 @@ chmod 755 install.sh
 #### Containerisation
 - Docker
 
-#### Artificial Intelligence
-- OLlama (you must install your own model on OLlama)
+#### Artificial Intelligence (with OLlama)
+- codeLlama
+- Devstral
 
 ---
 
