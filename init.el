@@ -244,10 +244,12 @@
 (global-set-key (kbd "C-S-k") 'kill-line)
 (global-set-key (kbd "C-c a") 'gptel)
 (global-set-key (kbd "C-c RET") 'gptel-send)
-(global-set-key (kbd "C-c m") 'gptel-menu)
+(global-set-key (kbd "C-c m") 'gptel-switch-model)
 
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
+
+(defvar my-project-path nil "Open project path")
 
 (defun my-open-folder ()
   "Close all current treemacs projects and open a new folder."
@@ -258,6 +260,7 @@
   (let* ((folder (read-directory-name "Open Folder: "))
          (name (file-name-nondirectory (directory-file-name folder)))
          (old-projects (treemacs-workspace->projects (treemacs-current-workspace))))
+    (setq my-project-path folder)
     (treemacs-do-add-project-to-workspace folder name)
     (dolist (project old-projects)
       (ignore-errors
@@ -351,7 +354,7 @@ popup is currently visible (so TAB never fights with Company)."
   :mode ("\\.md\\'" . gfm-mode))
 
 ;; ============================================================
-;; GPTEL (LLM via Ollama / CodeLlama)
+;; GPTEL (LLM via Ollama)
 ;; ============================================================
 (use-package gptel
   :config
@@ -359,8 +362,72 @@ popup is currently visible (so TAB never fights with Company)."
         (gptel-make-ollama "Ollama"
           :host "IP_SERVER:11434"
           :stream t
-          :models '(devstral codellama))
+          :models '((devstral :capabilities (tool-use)) codellama))
         gptel-model 'devstral))
+
+(defun gptel-switch-model ()
+  "Switch to the following gptel backend model"
+  (interactive)
+  (let* ((models (gptel-backend-models gptel-backend))
+         (next (or (cadr (memq gptel-model models))
+                   (car models))))
+    (setq-default gptel-model next)
+    (setq gptel-model next)
+    (message "gptel : model -> %s" next))
+  )
+
+;; ----- Read project -----
+(defun my-require-project ()
+  "Check open project"
+  (if (null my-project-path)
+      (user-error "No project open")
+    my-project-path))
+
+(defun my-project-full-path (path)
+  "Find full path for a file / folder"
+  (let ((file (expand-file-name path (my-require-project))))
+    (unless (file-in-directory-p file my-project-path)
+      (user-error "File not in Project"))
+    file))
+
+(defun my-tool-list-directory (path)
+  "Return list of project files / folder"
+  (let ((full-path (my-project-full-path path)))
+    (mapconcat #'(lambda (file)
+                   (if (file-directory-p file)
+                       (concat (file-name-nondirectory file) "/")
+                     (file-name-nondirectory file)))
+               (directory-files full-path t directory-files-no-dot-files-regexp)
+               "\n")))
+
+(gptel-make-tool
+ :name "list_directory"
+ :function #'my-tool-list-directory
+ :description "Lists the files and subfolders of a folder in the project. Folders end with a slash."
+ :args '((:name "path"
+                :type string
+                :description "Path of the folder, relative to the project root. Use \".\" for the root itself."))
+ :category "Tool")
+
+
+;; ----- Read file -----
+(defun my-tool-read-file (path)
+  "Read file."
+  (let ((full-path (my-project-full-path path)))
+    (with-temp-buffer
+      (insert-file-contents full-path)
+      (buffer-string))))
+
+(gptel-make-tool
+ :name "read_file"
+ :function #'my-tool-read-file
+ :description "Read the contents of a file in the project"
+ :args '((:name "path"
+                :type string
+                :description "Path of the file, relative to the project root."))
+ :category "Tool")
+
+(setq gptel-tools (list (gptel-get-tool "list_directory") (gptel-get-tool "read_file")))
 
 ;; ============================================================
 ;; CUSTOM

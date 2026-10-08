@@ -124,28 +124,28 @@ These shortcuts are available across all modes and buffers.
  |--------------------|---------------------------|----------------------------------------------|
  | `C-s`              | `save-buffer`             | Save the current buffer.                     |
  | `C-S-s`            | `isearch-forward`         | Incremental search forward.                  |
- | `C-z`              | `undo`                    | Undo the last action.                         |
+ | `C-z`              | `undo`                    | Undo the last action.                        |
  | `C-f`              | `isearch-forward`         | Incremental search forward.                  |
  | `C-S-f`            | `consult-ripgrep`         | Global search in files using `ripgrep`.      |
- | `C-o`              | `find-file`               | Open a file.                                  |
+ | `C-o`              | `find-file`               | Open a file.                                 |
  | `C-b`              | `treemacs`                | Toggle the Treemacs file explorer.           |
- | `C-~`              | `my-toggle-vterm`         | Toggle the integrated terminal (`vterm`).     |
+ | `C-~`              | `my-toggle-vterm`         | Toggle the integrated terminal (`vterm`).    |
  | `C-S-a`            | `move-beginning-of-line` | Move cursor to the beginning of the line.     |
  | `C-a`              | `mark-whole-buffer`      | Select the entire buffer.                     |
- | `C-S-k`            | `kill-line`               | Delete the current line.                      |
- | `C-\`              | `my-split-right`          | Split the window vertically.                  |
- | `C-<prior>`        | `centaur-tabs-backward`   | Switch to the previous tab.                   |
- | `C-<next>`         | `centaur-tabs-forward`    | Switch to the next tab.                       |
- | `TAB`              | `my-smart-tab`            | Indent or complete with Company.              |
+ | `C-S-k`            | `kill-line`               | Delete the current line.                     |
+ | `C-\`              | `my-split-right`          | Split the window vertically.                 |
+ | `C-<prior>`        | `centaur-tabs-backward`   | Switch to the previous tab.                  |
+ | `C-<next>`         | `centaur-tabs-forward`    | Switch to the next tab.                      |
+ | `TAB`              | `my-smart-tab`            | Indent or complete with Company.             |
 
 ---
 ### CUA Mode Shortcuts (Copy, Cut, Paste)
 These shortcuts are enabled by `cua-mode` for a familiar editing experience.
  | **Shortcut**       | **Command**               | **Description**                              |
  |--------------------|---------------------------|----------------------------------------------|
- | `C-c`              | `kill-ring-save`          | Copy the selected text to the clipboard.      |
- | `C-x`              | `kill-region`             | Cut the selected text.                        |
- | `C-v`              | `yank`                    | Paste the copied/cut text.                    |
+ | `C-c`              | `kill-ring-save`          | Copy the selected text to the clipboard.     |
+ | `C-x`              | `kill-region`             | Cut the selected text.                       |
+ | `C-v`              | `yank`                    | Paste the copied/cut text.                   |
 
 ---
 ### Treemacs (File Explorer)
@@ -160,17 +160,17 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
  | **Shortcut**       | **Command**               | **Description**                              |
  |--------------------|---------------------------|----------------------------------------------|
  | `C-S-v`            | `vterm-yank`              | Paste into the terminal.                     |
- | `C-S-c`            | `vterm-copy-mode`         | Enter copy mode in the terminal.              |
+ | `C-S-c`            | `vterm-copy-mode`         | Enter copy mode in the terminal.             |
 
 ---
 
 ### LSP (Eglot) and Autocompletion (Company)
- | **Shortcut**       | **Command**                     | **Context**                     |
- |--------------------|---------------------------------|----------------------------------|
- | `TAB`              | `company-complete-selection`   | Complete the selection in Company.|
- | `<up>`             | `company-select-previous`      | Select the previous item in Company. |
- | `<down>`           | `company-select-next`          | Select the next item in Company.     |
- | `RET`              | Disabled in Company.           | Prevents automatic validation.   |
+ | **Shortcut**       | **Command**                     | **Context**                        |
+ |--------------------|---------------------------------|------------------------------------|
+ | `TAB`              | `company-complete-selection`   | Complete the selection in Company.  |
+ | `<up>`             | `company-select-previous`      | Select the previous item in Company.|
+ | `<down>`           | `company-select-next`          | Select the next item in Company.    |
+ | `RET`              | Disabled in Company.           | Prevents automatic validation.      |
 
 ---
 
