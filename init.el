@@ -445,13 +445,46 @@ popup is currently visible (so TAB never fights with Company)."
 (gptel-make-tool
  :name "search_project"
  :function #'my-tool-search-project
- :description "Searches the project for a regular expression and returns matching lines, one per line, formatted as file:line:text. Prefer short or partial words (for example \"iso\" rather than \"isometric\") and search again with other words if nothing is found. Use read_file afterwards to see the full file."
+ :description "Searches the project ... Returns matching lines as file:line:text. \
+These lines are only excerpts: you MUST use read_file on the relevant files \
+before answering anything about how the code works."
  :args '((:name "pattern"
                 :type string
                 :description "Pattern to look for."))
  :category "Tool")
 
 (setq gptel-tools (list (gptel-get-tool "list_directory") (gptel-get-tool "read_file") (gptel-get-tool "search_project")))
+
+;; =========================================================
+;; Directives système pour Devstral
+;; =========================================================
+(setf (alist-get 'default gptel-directives)
+      "You are a code assistant working inside an Emacs project.
+
+## Rules for searching
+- Search with short English words, even if the question is in French. \
+Prefer partial words (\"rot\" rather than \"rotation\").
+- If a search returns nothing, try other words: synonyms, related \
+identifiers, shorter fragments.
+- If you don't know a path, NEVER guess it: call list_directory on \".\" \
+first, then list the subfolders that look relevant.
+
+## Rules for reading
+- Search results are ONLY excerpts (single matching lines). They are \
+NEVER enough to understand code.
+- After EVERY search, you MUST call read_file on the most relevant files \
+found in the results before answering.
+- If a file appears several times in the results, or seems central to \
+the question, read it entirely.
+- Never answer about how code works without having read the code that \
+implements it.
+
+## Rules for answering
+- Do not just name functions: explain what they actually do, step by step, \
+with the real math or logic found in the files.
+- If after reading you still cannot explain a mechanism, say so and read \
+more files instead of inventing an explanation.
+- Answer in the language of the user's question.")
 
 ;; ============================================================
 ;; CUSTOM
