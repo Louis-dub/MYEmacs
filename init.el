@@ -359,7 +359,7 @@ popup is currently visible (so TAB never fights with Company)."
 (use-package gptel
   :config
   (setq gptel-backend
-        (gptel-make-ollama "Ollama"
+        (gptel-make-ollama "OLlama"
           :host "IP_SERVER:11434"
           :stream t
           :models '((devstral :capabilities (tool-use)) codellama))
@@ -427,7 +427,31 @@ popup is currently visible (so TAB never fights with Company)."
                 :description "Path of the file, relative to the project root."))
  :category "Tool")
 
-(setq gptel-tools (list (gptel-get-tool "list_directory") (gptel-get-tool "read_file")))
+;; ----- Search in project -----
+
+(defun my-tool-search-project (pattern)
+  "Search pattern in project"
+  (let ((default-directory (my-require-project)))
+    (mapconcat 'identity
+               (process-lines-ignore-status
+                "rg"
+                "--line-number"
+                "--no-heading"
+                "-e"
+                pattern
+                ".")
+               "\n")))
+
+(gptel-make-tool
+ :name "search_project"
+ :function #'my-tool-search-project
+ :description "Searches the project for a regular expression and returns matching lines, one per line, formatted as file:line:text. Prefer short or partial words (for example \"iso\" rather than \"isometric\") and search again with other words if nothing is found. Use read_file afterwards to see the full file."
+ :args '((:name "pattern"
+                :type string
+                :description "Pattern to look for."))
+ :category "Tool")
+
+(setq gptel-tools (list (gptel-get-tool "list_directory") (gptel-get-tool "read_file") (gptel-get-tool "search_project")))
 
 ;; ============================================================
 ;; CUSTOM
