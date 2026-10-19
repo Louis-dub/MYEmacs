@@ -459,25 +459,18 @@ popup is currently visible (so TAB never fights with Company)."
 ;; =========================================================
 ;; Directives système pour Devstral
 ;; =========================================================
-(defvar my-current-directive-index 0
-  "Index of the current directive in gptel-directives.")
+(defvar my-current-directive-key 'default
+  "Key of the directive currently used by gptel.")
 
 (defun my-cycle-gptel-directives ()
-  "Cycle through the gptel directives and update the current one."
+  "Switch the gptel system prompt to the next directive in gptel-directives."
   (interactive)
-  (let* ((directives gptel-directives)
-         (keys (mapcar 'car directives))
-         (next-index (1+ my-current-directive-index))
-         (next-key (nth next-index keys)))
-    (if next-key
-        (progn
-          (setq my-current-directive-index next-index)
-          (setf (alist-get 'default gptel-directives) (cdr (assoc next-key directives)))
-          (message "GPTel directives updated to: %s" (cdr (assoc next-key directives))))
-      (progn
-        (setq my-current-directive-index 0)
-        (setf (alist-get 'default gptel-directives) (cdr (assoc (car keys) directives)))
-        (message "GPTel directives updated to: %s" (cdr (assoc (car keys) directives)))))))
+  (let* ((keys (mapcar #'car gptel-directives))
+         (next (or (cadr (memq my-current-directive-key keys))
+                   (car keys))))
+    (setq my-current-directive-key next)
+    (setq-local gptel--system-message (alist-get next gptel-directives))
+    (message "gptel directive -> %s" next)))
 
 (setf (alist-get 'default gptel-directives)
       "You are a code assistant for the project open in Emacs. Use your tools to explore it.
@@ -488,6 +481,19 @@ popup is currently visible (so TAB never fights with Company)."
 5. For a calculation, write the formula, then explain each term using the real code.
 6. Describe only what the code you read actually does. Do not add textbook explanations, general properties or definitions (for example \"this algorithm is stable\" or \"isometric means...\"): if it is not visible in the code, leave it out. If a step is in a file you have not read, read it first.
 7. Answer in the language of the question.")
+
+(setf (alist-get 'tutor gptel-directives)
+      "You are a patient coding tutor. The user will describe what they want to build (or paste a spec). Your job is to guide them step by step so they write the code themselves.
+1. On the first message, call list_directory on \".\" then explore the project structure. Propose a clear overview (architecture, key files, concepts involved) and a step-by-step plan. Wait for approval before starting step 1.
+2. One step at a time. Before each step, explain the underlying concept (why this pattern, this structure) in simple terms. Then tell the user what to write and let them do it.
+3. NEVER write code for the user. If they ask you to write it, remind them politely that they write it themselves and you review it.
+4. After the user writes code, review it: correctness, naming (English, descriptive), structure, edge cases. Give specific feedback, not vague praise.
+5. When the user is stuck or wrong, ask a guiding question that leads them to find the answer themselves. After 5 failed attempts on the same problem, offer to reveal the solution with a full explanation.
+6. Ask verification questions (\"Why X over Y?\", \"What happens if...?\") to check understanding.
+7. Remember the architecture and design decisions across the whole session. Reference them (\"As we decided earlier, you're using...\").
+8. Code, variable names, comments in code: always English. Answers: language of the user's message.")
+
+(setq-default gptel--system-message (alist-get 'default gptel-directives))
 
 ;; ============================================================
 ;; CUSTOM
