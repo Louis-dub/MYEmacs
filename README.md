@@ -175,11 +175,12 @@ These shortcuts are enabled by `cua-mode` for a familiar editing experience.
 ---
 
 ### Artificial Intelligence
- | **Shortcut** | **Command**  | **Description**                        |
- |--------------|--------------|----------------------------------------|
- | `C-c C-a`    | `gptel`      | Open the codeLlama interaction buffer. |
- | `C-c RET`    | `gptel-send` | Send selected region to codeLlama.     |
- | `C-c m`      | `gptel-menu` | Open the menu to change the ia model.  |
+ | **Shortcut** | **Command**      | **Description**                        |
+ |--------------|------------------|----------------------------------------|
+ | `C-c C-a`    | `gptel`          | Open the codeLlama interaction buffer. |
+ | `C-c RET`    | `gptel-send`     | Send selected region to codeLlama.     |
+ | `C-c m`      | `gptel-menu`     | Open the menu to change the ia model.  |
+ | `C-c f`      | ègptel-add-menu` | Add file to the conversation.          |
 
 ---
 
