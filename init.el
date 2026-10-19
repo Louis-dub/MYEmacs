@@ -247,6 +247,7 @@
 (global-set-key (kbd "C-c m") 'gptel-switch-model)
 (global-set-key (kbd "C-c f") 'gptel-add-file)
 (global-set-key (kbd "C-c r") 'gptel-context-remove-all)
+(global-set-key (kbd "C-c d") 'my-cycle-gptel-directives)
 
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
@@ -458,6 +459,26 @@ popup is currently visible (so TAB never fights with Company)."
 ;; =========================================================
 ;; Directives système pour Devstral
 ;; =========================================================
+(defvar my-current-directive-index 0
+  "Index of the current directive in gptel-directives.")
+
+(defun my-cycle-gptel-directives ()
+  "Cycle through the gptel directives and update the current one."
+  (interactive)
+  (let* ((directives gptel-directives)
+         (keys (mapcar 'car directives))
+         (next-index (1+ my-current-directive-index))
+         (next-key (nth next-index keys)))
+    (if next-key
+        (progn
+          (setq my-current-directive-index next-index)
+          (setf (alist-get 'default gptel-directives) (cdr (assoc next-key directives)))
+          (message "GPTel directives updated to: %s" (cdr (assoc next-key directives))))
+      (progn
+        (setq my-current-directive-index 0)
+        (setf (alist-get 'default gptel-directives) (cdr (assoc (car keys) directives)))
+        (message "GPTel directives updated to: %s" (cdr (assoc (car keys) directives)))))))
+
 (setf (alist-get 'default gptel-directives)
       "You are a code assistant for the project open in Emacs. Use your tools to explore it.
 1. Search with short English word stems that cover variants (\"rotat\" rather than \"rotate\" or \"rotation\"), even if the question is in French. If nothing is found, try other stems.
