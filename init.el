@@ -421,14 +421,13 @@ popup is currently visible (so TAB never fights with Company)."
 (gptel-make-tool
  :name "read_file"
  :function #'my-tool-read-file
- :description "Read the contents of a file in the project"
+ :description "Reads and returns the full text content of a file in the project. Use list_directory first to find file paths."
  :args '((:name "path"
                 :type string
-                :description "Path of the file, relative to the project root."))
+                :description "Path of the file, relative to the project root, for example \"src/main.c\"."))
  :category "Tool")
 
 ;; ----- Search in project -----
-
 (defun my-tool-search-project (pattern)
   "Search pattern in project"
   (let ((default-directory (my-require-project)))
@@ -445,46 +444,27 @@ popup is currently visible (so TAB never fights with Company)."
 (gptel-make-tool
  :name "search_project"
  :function #'my-tool-search-project
- :description "Searches the project ... Returns matching lines as file:line:text. \
-These lines are only excerpts: you MUST use read_file on the relevant files \
-before answering anything about how the code works."
+ :description "Searches the project for a regular expression and returns matching lines, one per line, formatted as file:line:text. Use short word stems that cover variants (for example \"rotat\" matches both \"rotate\" and \"rotation\", \"iso\" matches \"isometric\"). To find where a function is called, search its exact name. These lines are only excerpts: you MUST use read_file on the relevant files before answering anything about how the code works."
  :args '((:name "pattern"
                 :type string
-                :description "Pattern to look for."))
+                :description "A regular expression to search for in file contents."))
  :category "Tool")
 
 (setq gptel-tools (list (gptel-get-tool "list_directory") (gptel-get-tool "read_file") (gptel-get-tool "search_project")))
+
 
 ;; =========================================================
 ;; Directives système pour Devstral
 ;; =========================================================
 (setf (alist-get 'default gptel-directives)
-      "You are a code assistant working inside an Emacs project.
-
-## Rules for searching
-- Search with short English words, even if the question is in French. \
-Prefer partial words (\"rot\" rather than \"rotation\").
-- If a search returns nothing, try other words: synonyms, related \
-identifiers, shorter fragments.
-- If you don't know a path, NEVER guess it: call list_directory on \".\" \
-first, then list the subfolders that look relevant.
-
-## Rules for reading
-- Search results are ONLY excerpts (single matching lines). They are \
-NEVER enough to understand code.
-- After EVERY search, you MUST call read_file on the most relevant files \
-found in the results before answering.
-- If a file appears several times in the results, or seems central to \
-the question, read it entirely.
-- Never answer about how code works without having read the code that \
-implements it.
-
-## Rules for answering
-- Do not just name functions: explain what they actually do, step by step, \
-with the real math or logic found in the files.
-- If after reading you still cannot explain a mechanism, say so and read \
-more files instead of inventing an explanation.
-- Answer in the language of the user's question.")
+      "You are a code assistant for the project open in Emacs. Use your tools to explore it.
+1. Search with short English word stems that cover variants (\"rotat\" rather than \"rotate\" or \"rotation\"), even if the question is in French. If nothing is found, try other stems.
+2. Never guess a path: call list_directory on \".\" first, then on the relevant subfolders.
+3. Search results are only excerpts: after every search, call read_file on the relevant files before answering.
+4. After reading a file, search for the exact name of its main functions to find who calls them (for example \"apply_rotation\"), and read those files too: callers show what triggers the code (events, initialization).
+5. For a calculation, write the formula, then explain each term using the real code.
+6. Describe only what the code you read actually does. Do not add textbook explanations, general properties or definitions (for example \"this algorithm is stable\" or \"isometric means...\"): if it is not visible in the code, leave it out. If a step is in a file you have not read, read it first.
+7. Answer in the language of the question.")
 
 ;; ============================================================
 ;; CUSTOM
