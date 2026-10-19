@@ -246,6 +246,7 @@
 (global-set-key (kbd "C-c RET") 'gptel-send)
 (global-set-key (kbd "C-c m") 'gptel-switch-model)
 (global-set-key (kbd "C-c f") 'gptel-add-file)
+(global-set-key (kbd "C-c r") 'gptel-context-remove-all)
 
 (define-prefix-command 'vscode-prefix-map)
 (global-set-key (kbd "C-k") 'vscode-prefix-map)
