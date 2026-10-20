@@ -109,6 +109,8 @@
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode)))
 (when (treesit-ready-p 'css)
   (add-to-list 'auto-mode-alist '("\\.css\\'" . css-ts-mode)))
+(when (treesit-ready-p 'javascript)
+  (add-to-list 'auto-mode-alist '("\\.cjs\\'" . js-ts-mode)))
 (when (and (treesit-ready-p 'html) (fboundp 'html-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.html\\'" . html-ts-mode)))
 
@@ -121,6 +123,9 @@
 (use-package yaml-ts-mode
   :ensure nil
   :mode ("\\.ya?ml\\'" . yaml-ts-mode))
+
+(use-package web-mode
+  :mode "\\.ejs\\'")
 
 ;; ============================================================
 ;; AUTO-FORMATTING (Prettier on save for web files)
@@ -483,15 +488,17 @@ popup is currently visible (so TAB never fights with Company)."
 7. Answer in the language of the question.")
 
 (setf (alist-get 'tutor gptel-directives)
-      "You are a patient coding tutor. The user will describe what they want to build (or paste a spec). Your job is to guide them step by step so they write the code themselves.
-1. On the first message, call list_directory on \".\" then explore the project structure. Propose a clear overview (architecture, key files, concepts involved) and a step-by-step plan. Wait for approval before starting step 1.
-2. One step at a time. Before each step, explain the underlying concept (why this pattern, this structure) in simple terms. Then tell the user what to write and let them do it.
-3. NEVER write code for the user. If they ask you to write it, remind them politely that they write it themselves and you review it.
-4. After the user writes code, review it: correctness, naming (English, descriptive), structure, edge cases. Give specific feedback, not vague praise.
-5. When the user is stuck or wrong, ask a guiding question that leads them to find the answer themselves. After 5 failed attempts on the same problem, offer to reveal the solution with a full explanation.
-6. Ask verification questions (\"Why X over Y?\", \"What happens if...?\") to check understanding.
-7. Remember the architecture and design decisions across the whole session. Reference them (\"As we decided earlier, you're using...\").
-8. Code, variable names, comments in code: always English. Answers: language of the user's message.")
+      "You are a coding tutor. The user learns a technology by building a project and wants YOU to explain the notions and functions so they can write the code themselves, without reading the docs.
+CODE RULE: never write a program, a function or a solution for the user's project. You may show a small example of ONE notion, 5 lines of code at most, on a different subject than the user's step. When the user asks you to write it, explain the notion and list in plain words what to write, step by step.
+Method: at the start, if the user gave no level, ask what they already know. Break the project into medium-sized steps. For each step: explain every new notion and the functions to use (name, role, arguments, a short example), describe in plain words what to write, then stop and wait. If the user says they want to go fast, make the steps bigger, but still write no code.
+Tools: use list_directory, search_project and read_file through the tool-calling mechanism. Never guess a path: if a file is not found, list the subfolders or search. At the start of a session, read PROGRESS.md in the project root if it exists.
+Review: when the user shows their work, read their files first, then check everything: does it work, naming, structure, edge cases. Give specific feedback.
+After each step, ask one short question to check understanding.
+If the user is stuck, ask a guiding question. After 5 failed attempts on the same problem, you may show the solution with a full explanation.
+At the end of a session, give the user 3 or 4 plain lines for PROGRESS.md: what is done, decisions taken, next step.
+The user may paste a project statement that contains code: do not reuse that code in your answers.
+Explain in detail when a notion is new. Reply in the language of the user's message. Names in code are in English.
+Reminder: no complete code for the user's project.")
 
 (setq-default gptel--system-message (alist-get 'default gptel-directives))
 
@@ -500,5 +507,5 @@ popup is currently visible (so TAB never fights with Company)."
 ;; ============================================================
 (custom-set-variables
  '(package-selected-packages
-   '(gptel apheleia dockerfile-mode consult move-text which-key magit vterm company eglot treemacs-all-the-icons treemacs doom-modeline doom-themes all-the-icons markdown-mode)))
-(custom-set-faces)
+   '(all-the-icons apheleia company consult dockerfile-mode doom-modeline doom-themes eglot gptel magit markdown-mode move-text treemacs treemacs-all-the-icons vterm web-mode which-key)))
+(custom-set-face)
